@@ -62,8 +62,8 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Plan
-        id: plan
+      - name: Terraform Plan (PR)
+        id: plan-pr
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color -out=tfplan
         continue-on-error: true
@@ -72,14 +72,14 @@ jobs:
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request'
         env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+          PLAN: "terraform\n${{ steps.plan-pr.outputs.stdout }}"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan-pr.outcome }}\`
 
             <details><summary>Show Plan</summary>
 
@@ -98,8 +98,8 @@ jobs:
               body: output
             })
 
-      - name: Terraform Plan
-        id: plan
+      - name: Terraform Plan (Push/Manual)
+        id: plan-push
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         run: terraform plan -no-color -out=tfplan
 
