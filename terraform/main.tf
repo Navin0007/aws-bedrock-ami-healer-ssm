@@ -34,7 +34,7 @@ resource "aws_ssm_parameter" "namespace_doc" {
   value = jsonencode({
     description = "SSM namespace for ami-healer cross-repo configuration",
     repos = {
-      infra      = "writes /infra/* after terraform apply",
+      infra      = "params documented here, values written by infra pipeline after terraform apply",
       bedrock    = "writes /bedrock/* after terraform apply",
       lambda     = "writes /lambda/* after terraform apply",
       pipeline   = "writes /pipeline/* at runtime (Lambda execution)"
@@ -42,6 +42,79 @@ resource "aws_ssm_parameter" "namespace_doc" {
   })
   description = "SSM namespace documentation"
   overwrite   = true
+}
+
+# ─── INFRA PIPELINE PARAMETERS ────────────────────────────────────────────────
+# Bootstrapped here with placeholders.
+# Real values written by infra pipeline after terraform apply.
+# ignore_changes = [value] ensures terraform won't reset pipeline-managed values.
+
+resource "aws_ssm_parameter" "infra_ami_id" {
+  name        = "/${var.project_name}/infra/ami-id"
+  type        = "String"
+  value       = "placeholder"
+  description = "Latest working AMI ID - written by AMI build pipeline after CVE scan"
+  overwrite   = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "infra_asg_name" {
+  name        = "/${var.project_name}/infra/asg-name"
+  type        = "String"
+  value       = "ami-healer-asg"
+  description = "ASG name for ami-healer infra"
+  overwrite   = true
+}
+
+resource "aws_ssm_parameter" "infra_launch_template_id" {
+  name        = "/${var.project_name}/infra/launch-template-id"
+  type        = "String"
+  value       = "placeholder"
+  description = "Launch template ID - written by infra pipeline after apply"
+  overwrite   = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "infra_vpc_id" {
+  name        = "/${var.project_name}/infra/vpc-id"
+  type        = "String"
+  value       = "placeholder"
+  description = "VPC ID for ami-healer infra"
+  overwrite   = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "infra_private_subnet_ids" {
+  name        = "/${var.project_name}/infra/private-subnet-ids"
+  type        = "StringList"
+  value       = "placeholder"
+  description = "Private subnet IDs - comma separated"
+  overwrite   = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
+
+resource "aws_ssm_parameter" "infra_alb_dns_name" {
+  name        = "/${var.project_name}/infra/alb-dns-name"
+  type        = "String"
+  value       = "placeholder"
+  description = "ALB DNS name for ami-healer"
+  overwrite   = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 # ─── IAM POLICY: Read access to entire ami-healer SSM namespace ───────────────
